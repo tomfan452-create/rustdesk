@@ -1,9 +1,24 @@
-      - name: Diagnosticar red y RustDesk
+
+name: RustDesk Remote Desktop
+
+on:
+  workflow_dispatch:
+
+jobs:
+  desktop:
+    runs-on: windows-latest
+    steps:
+      - name: Check Windows runner
+        shell: pwsh
+        run: |
+          Write-Host "Windows runner iniciado"
+
+      - name: Diagnose RustDesk ports
         shell: pwsh
         run: |
           Write-Host "=== IP local ==="
           Get-NetIPAddress -AddressFamily IPv4 |
-            Select-Object IPAddress,InterfaceAlias
+            Select-Object IPAddress, InterfaceAlias
 
           Write-Host "=== Puertos RustDesk ==="
           Get-NetTCPConnection -State Listen |
@@ -11,7 +26,8 @@
               $_.LocalPort -ge 21114 -and
               $_.LocalPort -le 21119
             } |
-            Format-Table LocalAddress,LocalPort,OwningProcess
+            Format-Table LocalAddress, LocalPort, OwningProcess
 
           Write-Host "=== Procesos RustDesk ==="
           Get-Process *rustdesk* -ErrorAction SilentlyContinue
+          
