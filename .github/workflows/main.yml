@@ -1,0 +1,17 @@
+      - name: Diagnosticar red y RustDesk
+        shell: pwsh
+        run: |
+          Write-Host "=== IP local ==="
+          Get-NetIPAddress -AddressFamily IPv4 |
+            Select-Object IPAddress,InterfaceAlias
+
+          Write-Host "=== Puertos RustDesk ==="
+          Get-NetTCPConnection -State Listen |
+            Where-Object {
+              $_.LocalPort -ge 21114 -and
+              $_.LocalPort -le 21119
+            } |
+            Format-Table LocalAddress,LocalPort,OwningProcess
+
+          Write-Host "=== Procesos RustDesk ==="
+          Get-Process *rustdesk* -ErrorAction SilentlyContinue
